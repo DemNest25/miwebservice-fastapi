@@ -6,16 +6,16 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
     raise RuntimeError("DATABASE_URL no está definida en variables de entorno.")
 
-# Asegura SSL en Render
-engine = create_engine(
-    DATABASE_URL,
-    connect_args={"sslmode": "require"} if "sslmode" not in DATABASE_URL else {}
-)
+# Si viene con psycopg2, conviértelo a psycopg (driver moderno, Py3.13 friendly)
+if DATABASE_URL.startswith("postgresql+psycopg2"):
+    DATABASE_URL = DATABASE_URL.replace("postgresql+psycopg2", "postgresql+psycopg", 1)
+
+# Si tu cadena ya trae ?sslmode=require, no hace falta connect_args
+engine = create_engine(DATABASE_URL)
 
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 Base = declarative_base()
 
-# Dependencia para FastAPI
 def get_db():
     db = SessionLocal()
     try:
