@@ -33,7 +33,7 @@ def index():
         "data": {
             "env": "production",
             "docs": "/api/docs",
-            "endpoints": ["/api/health", "/api/usuarios"]
+            "endpoints": ["/api/health", "/api/usuarios", "/api/saludo"]
         }
     }
 
@@ -76,3 +76,7 @@ def delete_usuario(id_usuario: int, db: Session = Depends(get_db)):
     if not ok:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     return
+
+@app.get("/api/saludo")
+def saludo():
+    return {"saludo": "Hola ingeniero, esta práctica sí estuvo entretenida"}
